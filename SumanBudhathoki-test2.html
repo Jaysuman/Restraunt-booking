@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Place for Your Dinner!</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+        h1 {
+            color: #444;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: inline-block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"] {
+            width: calc(100% - 150px);
+            max-width: 300px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        .form-group input[type="text"].error {
+            border-color: red;
+        }
+        .radio-group input, .checkbox-group input {
+            accent-color: #007bff;
+        }
+        .radio-group label, .checkbox-group label {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        #message {
+            color: green;
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+        }
+        #dots {
+            display: none;
+            margin-left: 5px;
+        }
+        button:disabled + #dots {
+            display: inline;
+        }
+        .container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .form-group label {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Booking Place for Your Dinner!</h1>
+    <div class="container">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" onblur="validateName()">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" onblur="validatePhone()">
+        </div>
+
+        <div class="form-group">
+            <label>Select a time:</label><br>
+            <div class="radio-group">
+                <input type="radio" name="programTime" value="05:00" id="time1" checked>
+                <label for="time1">05:00</label><br>
+                <input type="radio" name="programTime" value="06:00" id="time2">
+                <label for="time2">06:00</label><br>
+                <input type="radio" name="programTime" value="07:00" id="time3">
+                <label for="time3">07:00</label><br>
+                <input type="radio" name="programTime" value="08:00" id="time4">
+                <label for="time4">08:00</label><br>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>What would you like to have with us?</label><br>
+            <div class="checkbox-group" onchange="validateForm()">
+                <input type="checkbox" name="options" value="Starters" id="starters">
+                <label for="starters">Starters</label><br>
+                <input type="checkbox" name="options" value="Main Course" id="mainCourse">
+                <label for="mainCourse">Main Course</label><br>
+                <input type="checkbox" name="options" value="Desserts" id="desserts">
+                <label for="desserts">Desserts</label><br>
+                <input type="checkbox" name="options" value="Drinks" id="drinks">
+                <label for="drinks">Drinks</label><br>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button id="submit" onclick="displayDetails()" disabled>Submit</button>
+            <span id="dots"> ...</span>
+
+            <span id="form-error" class="error-message"></span>
+            <!-- error message for form displayed here -->
+        </div>
+
+        <span id="message"></span>
+    </div>
+
+    <script>
+        function validateName() {
+            const nameField = document.getElementById("name");
+            const name = nameField.value;
+            const formError = document.getElementById("form-error");
+            const submitButton = document.getElementById("submit");
+
+            if (name.length === 0) {
+                formError.textContent = "Error: Name is empty.";
+                nameField.classList.add("error");
+                validateForm();
+                return false;
+            } else if (!name.includes(' ')) {
+                formError.textContent = "Error: First and last names are required.";
+                nameField.classList.add("error");
+                validateForm();
+                return false;
+            } else {
+                formError.textContent = "";
+                nameField.classList.remove("error");
+                validateForm(); // Check form validity after resolving name validation
+                return true;
+            }
+        }
+
+        function validatePhone() {
+            const phoneField = document.getElementById("phone");
+            const phone = phoneField.value;
+            const formError = document.getElementById("form-error");
+            const submitButton = document.getElementById("submit");
+
+            if (phone.length === 0) {
+                formError.textContent = "Error: Phone number is empty.";
+                phoneField.classList.add("error");
+                validateForm();
+                return false;
+            } else if (phone.length !== 6) {
+                formError.textContent = "Error: Phone numbers must have exactly 6 characters.";
+                phoneField.classList.add("error");
+                validateForm();
+                return false;
+            } else if (!/^\d/.test(phone)) {
+                formError.textContent = "Error: Phone number must start with numbers.";
+                phoneField.classList.add("error");
+                validateForm();
+                return false;
+            } else {
+                formError.textContent = "";
+                phoneField.classList.remove("error");
+                validateForm(); // Check form validity after resolving phone validation
+                return true;
+            }
+        }
+
+        function validateForm() {
+            const nameField = document.getElementById("name");
+            const phoneField = document.getElementById("phone");
+            const isNameValid = !nameField.classList.contains("error") && nameField.value !== "";
+            const isPhoneValid = !phoneField.classList.contains("error") && phoneField.value !== "";
+            const selectedOptions = document.querySelectorAll('input[name="options"]:checked');
+            const submitButton = document.getElementById("submit");
+            const formError = document.getElementById("form-error");
+            const dots = document.getElementById("dots");
+
+            const isFormValid = isNameValid && isPhoneValid && selectedOptions.length > 0;
+            submitButton.disabled = !isFormValid;
+            dots.style.display = (submitButton.disabled && formError.textContent === "") ? 'inline' : 'none';
+
+            if (isFormValid) {
+                formError.textContent = ""; // Clear any previous error messages
+                submitButton.disabled = false; // Enable the submit button
+            }
+        }
+
+        function displayDetails() {
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const programTimeElement = document.querySelector('input[name="programTime"]:checked');
+            const selectedOptions = document.querySelectorAll('input[name="options"]:checked');
+            const options = Array.from(selectedOptions).map(option => option.value).join(", ");
+            const message = document.getElementById("message");
+            const formError = document.getElementById("form-error");
+            const submitButton = document.getElementById("submit");
+
+            // Clear any previous error messages
+            formError.textContent = "";
+
+            if (!programTimeElement) {
+                message.textContent = "Error: Please select a time.";
+                message.style.color = "red";
+                return;
+            }
+            if (selectedOptions.length === 0) {
+                message.textContent = "Error: Please select at least one option.";
+                message.style.color = "red";
+                return;
+            }
+            const programTime = programTimeElement.value;
+
+            const displayMessage = `${name} (Contact Info:${phone}) will attend at ${programTime} and will have ${options}.`;
+            message.style.color = "green";
+            message.textContent = displayMessage;
+
+            // Disable the submit button after submission
+            submitButton.disabled = true;
+
+            // Hide the message after a delay
+            setTimeout(() => {
+                message.textContent = "";
+            }, 5000); // 5 seconds delay
+        }
+
+        // Initialize form validation
+        validateForm();
+    </script>
+
+</body>
+</html>
